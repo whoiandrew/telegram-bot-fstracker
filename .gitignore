@@ -1,0 +1,4 @@
+.env
+/node_modules
+/images_from_camera
+.DS_Store
