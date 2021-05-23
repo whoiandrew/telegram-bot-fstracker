@@ -1,5 +1,4 @@
-
-import fs from 'fs';
+import fs from "fs";
 import dotenv from "dotenv";
 import { watch } from "fs";
 import { dirname } from "path";
@@ -23,12 +22,14 @@ bot.start((ctx) => {
 });
 
 watch(IMAGES_DIR, (_, filename) => {
-
   if (filename && filename?.match(/\.jpg$/)) {
     [...chatIds].forEach((chatId) => {
       console.log(chatId);
       (async () => {
-        await bot.telegram.sendMessage(chatId, `Got new image form your camera`);
+        await bot.telegram.sendMessage(
+          chatId,
+          `Got new image form your camera`
+        );
         bot.telegram.sendMessage(
           chatId,
           `To upload file run /uploadFile ${filename}`
@@ -40,7 +41,17 @@ watch(IMAGES_DIR, (_, filename) => {
 
 bot.command("uploadFile", async (ctx) => {
   const filename = ctx.update.message.text.split(" ")[1];
-  ctx.replyWithPhoto({source: fs.createReadStream(`${IMAGES_DIR}/${filename}`)});
+  if (filename) {
+    try {
+      ctx.replyWithPhoto({
+        source: fs.createReadStream(`${IMAGES_DIR}/${filename}`),
+      });
+    } catch (e) {
+      ctx.reply(e);
+    }
+  } else {
+    ctx.reply("no filename has provided, please, check your input");
+  }
 });
 
 bot.launch();
